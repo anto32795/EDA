@@ -1,6 +1,5 @@
 package material.linear;
 
-import material.Position;
 
 // cola circular
 public class ArrayQueue<E> implements Queue<E>{
