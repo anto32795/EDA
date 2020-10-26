@@ -258,6 +258,8 @@ public class LinkedTree<E> implements NAryTree<E> {
      * Operaciones parciales:
      *      pDest no puede ser descendiente de pOrgin
      * */
+
+    // TODO: RUN TEST PARENT NOT UN LINKED?
     @Override
     public void moveSubtree(Position<E> pOrig, Position<E> pDest) throws RuntimeException {
         TreeNode<E> origen = checkPosition(pOrig);
