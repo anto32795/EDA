@@ -256,11 +256,30 @@ public class LinkedTree<E> implements NAryTree<E> {
 
     /**
      * Operaciones parciales:
-     *      pDest es descenciente de pOrig
+     *      pDest no puede ser descendiente de pOrgin
      * */
     @Override
     public void moveSubtree(Position<E> pOrig, Position<E> pDest) throws RuntimeException {
-        //TODO: Practica 2 Ejercicio 1
+        TreeNode<E> origen = checkPosition(pOrig);
+        TreeNode<E> destino = checkPosition(pDest);
+        BFSIterator<E> it = new BFSIterator<>(this, pOrig);
+        Position<E> aux;
+
+        while(it.hasNext()){
+            aux = it.next();
+            if(aux == pDest){
+                throw new RuntimeException("Destination cannot be a descendant of Origin");
+            }
+        }
+
+        // parent is now destino
+        origen.setParent(destino);
+        // remove orig from parents children
+        origen.getParent().getChildren().remove(origen);
+        // add origen to childrenList of destino
+        List<TreeNode<E>> newList = destino.getChildren();
+        newList.add(origen);
+        destino.setChildren(newList);
 
     }
 
