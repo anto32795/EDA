@@ -1,5 +1,7 @@
 package usecase.practica2;
 
+import material.tree.narytree.LinkedTree;
+
 public class GameOfThrones {
 
     public void loadFile(String pathToFile){

@@ -253,6 +253,11 @@ public class LinkedTree<E> implements NAryTree<E> {
         return new BFSIterator<>(this);
     }
 
+
+    /**
+     * Operaciones parciales:
+     *      pDest es descenciente de pOrig
+     * */
     @Override
     public void moveSubtree(Position<E> pOrig, Position<E> pDest) throws RuntimeException {
         //TODO: Practica 2 Ejercicio 1
