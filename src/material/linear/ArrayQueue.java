@@ -18,6 +18,13 @@ public class ArrayQueue<E> implements Queue<E>{
         this.bucket = new Object[capacity];
     }
 
+    public ArrayQueue() {
+        this.front = -1;
+        this.size = 0;
+        this.capacity = 3;
+        this.bucket = new Object[capacity];
+    }
+
     public int getFront() {
         return front;
     }
