@@ -15,9 +15,11 @@ public class MoveSubTreeTest {
     @BeforeEach
     void setUp() {
         tree = new LinkedTree<>();
-        String li = "A C D B E F G H I J K L M N";
+        String li2 = "A C D B E F G H I J K L M N";
+        String li = "A B C D E F G H I J K L M N";
         String[] letras = li.split(" ");
         Position<String> raiz = tree.addRoot(letras[0]);
+
         Position<String> b = tree.add(letras[1], raiz);
         Position<String> c = tree.add(letras[2], raiz);
         Position<String> d = tree.add(letras[3], raiz);
@@ -35,11 +37,10 @@ public class MoveSubTreeTest {
         Position<String> l = tree.add(letras[11], g);
         Position<String> m = tree.add(letras[12], g);
 
-        Position<String> n = tree.add(letras[12], k);
+        Position<String> n = tree.add(letras[13], k);
 
         ori = b;
         dest = n;
-
     }
 
 

@@ -5,6 +5,7 @@ import material.tree.iterators.BFSIterator;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -274,15 +275,19 @@ public class LinkedTree<E> implements NAryTree<E> {
             }
         }
 
-        // parent is now destino
+        TreeNode<E> padre = origen.getParent();
+        List<TreeNode<E>> lista = padre.getChildren();
+        // REmove origen from parents children
+        lista.remove(origen);
+        padre.setChildren(lista);
+
+        //  Origens new parent is dest
         origen.setParent(destino);
-        // remove orig from parents children
-        origen.getParent().getChildren().remove(origen);
+
         // add origen to childrenList of destino
         List<TreeNode<E>> newList = destino.getChildren();
         newList.add(origen);
         destino.setChildren(newList);
-
     }
 
 }
