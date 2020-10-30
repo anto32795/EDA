@@ -1,8 +1,11 @@
 package material.tree.narytree;
 
 import material.Position;
+import material.tree.iterators.BFSIterator;
 
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * A linked class for a tree where nodes have an arbitrary number of children.
@@ -16,10 +19,6 @@ public class LCRSTree<E> implements NAryTree<E> {
         private T elem;
         private TreeNode<T> parent, sibling, firstSon;
         private LCRSTree<E> myTree;
-
-        /*public TreeNode(T elem) {
-            this.elem = elem;
-        }*/
 
         public TreeNode(T elem, TreeNode<T> parent, TreeNode<T> sibling, TreeNode<T> firstSon, LCRSTree<E> t) {
             this.elem = elem;
@@ -104,12 +103,21 @@ public class LCRSTree<E> implements NAryTree<E> {
 
     @Override
     public Position<E> parent(Position<E> v) throws RuntimeException {
-        throw new RuntimeException("Not yet implemented");
+        TreeNode<E> node = checkPosition(v);
+        return node.getParent();
     }
 
     @Override
     public Iterable<? extends Position<E>> children(Position<E> v) {
-        throw new RuntimeException("Not yet implemented");
+        TreeNode<E> parent = checkPosition(v);
+        List<Position<E>> children = new LinkedList<>();
+        Position<E> node = parent.getFirstSon();
+
+        while(node != null){
+            children.add(node);
+            node = ((TreeNode<E>)node).sibling;
+        }
+        return children;
     }
 
     @Override
@@ -138,30 +146,93 @@ public class LCRSTree<E> implements NAryTree<E> {
 
     @Override
     public Iterator<Position<E>> iterator() {
-        throw new RuntimeException("Not yet implemented");
+        return new BFSIterator<>(this);
     }
 
     @Override
     public E replace(Position<E> p, E e) {
-        throw new RuntimeException("Not yet implemented");
+        TreeNode<E> pos = checkPosition(p);
+        E rtn = pos.getElem();
+        pos.setElem(e);
+        return rtn;
     }
 
     @Override
     public void swapElements(Position<E> p1, Position<E> p2) {
-        throw new RuntimeException("Not yet implemented");
+        TreeNode<E> n1,n2;
+        E e1,e2;
+        n1 = checkPosition(p1);
+        n2 = checkPosition(p2);
+
+        e1 = n1.getElem();
+        e2 = n2.getElem();
+
+        n1.setElem(e2);
+        n2.setElem(e1);
     }
 
+    /**
+     *  1.- No tiene ningun hijo
+     *  2. - Tiene hijo(s):
+     *          iterar hasta que no haya sibling
+     * */
     @Override
     public Position<E> add(E element, Position<E> p) {
-        throw new RuntimeException("Not yet implemented");
+        TreeNode<E> node = checkPosition(p);
+        TreeNode<E> newNode = new TreeNode<>(element, node, null, null, this);
+        List<TreeNode<E>> childrenPos = ( List<TreeNode<E>> ) children(p); // casting exp
+        if(childrenPos.isEmpty()){  // 1
+            node.setFirstSon(newNode);
+        }
+        else{       // 2
+            for(TreeNode<E> n: childrenPos){
+                if(n.getSibling() == null){
+                    n.setSibling(newNode);
+                }
+            }
+        }
+        this.size++;
+        return newNode;
     }
 
     @Override
     public void remove(Position<E> p) {
-        throw new RuntimeException("Not yet implemented");
+        TreeNode<E> node = checkPosition(p);
+        if(isRoot(p)){
+            this.root = null;
+            this.size = 0;
+            return;
+        }
+        // First we need the size of the subtree to delete..
+        BFSIterator<E> it = new BFSIterator<>(this, p);
+        int subTreeSize = 0;
+        while(it.hasNext()){
+            subTreeSize++;
+        }
+
+        // Begin to delete the node
+        boolean onlyChild = false;
+        if(node.getParent().getFirstSon() == node){
+            onlyChild = true;
+        }
+
+        if(onlyChild){ // only delete from parent
+            node.getParent().setFirstSon(null);
+        }
+        else {      // only delete from his previous sibling
+            List<TreeNode<E>> childrenPos = ( List<TreeNode<E>> ) children(node.getParent());
+            for(TreeNode<E> n: childrenPos){
+                TreeNode<E> sib = n.getSibling();
+                if(sib == node){
+                    n.setSibling(null);
+                }
+            }
+        }
+        this.size -= subTreeSize;
     }
 
     @Override
+    // TODO: MOVE SUB TREE METHOD..
     public void moveSubtree(Position<E> pOrig, Position<E> pDest) throws RuntimeException {
         throw new RuntimeException("Not yet implemented");
     }
