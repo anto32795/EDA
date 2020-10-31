@@ -232,9 +232,62 @@ public class LCRSTree<E> implements NAryTree<E> {
     }
 
     @Override
-    // TODO: MOVE SUB TREE METHOD..
     public void moveSubtree(Position<E> pOrig, Position<E> pDest) throws RuntimeException {
-        throw new RuntimeException("Not yet implemented");
+        TreeNode<E> origen = checkPosition(pOrig);
+        TreeNode<E> destino = checkPosition(pDest);
+        Position<E> aux;
+        BFSIterator<E> it = new BFSIterator<>(this, pOrig);
+        boolean isOnlyChild_dest = false, isOnlyChild_orig = false;
+
+        while(it.hasNext()){
+            aux = it.next();
+            if(aux == pDest){
+                throw new RuntimeException("Destination cannot be a descendant of Origin");
+            }
+        }
+
+        List<TreeNode<E>> childrenDest = (List<TreeNode<E>>) children(pDest);
+        List<TreeNode<E>> childrenOrig = (List<TreeNode<E>>) children(pOrig);
+        //Iterator<TreeNode<E>> it2;
+
+
+        // check if we have to insert to fathers first son or to last sibling
+        if(childrenDest.isEmpty()){
+            isOnlyChild_dest = true;
+        }
+        // check if we have to unlink either from parent or sibling
+        if(childrenOrig.size() == 1){
+            isOnlyChild_orig = true;
+        }
+
+        // deleting origins reference
+        if(isOnlyChild_orig){
+            origen.getParent().setFirstSon(null);
+        }else{
+            TreeNode<E> aux2 = origen.getParent().getFirstSon();
+            while( aux2 != null){
+                if(aux2.getSibling() == origen){
+                    aux2.setSibling(null);
+                    break;
+                }
+            }
+        }
+
+        // origen's new parent is pDest
+        origen.setParent(destino);
+
+        // adding new son to parent/sibling
+        if(isOnlyChild_dest){
+            destino.setFirstSon(origen);
+        }else{
+            TreeNode<E> aux2 = destino.getFirstSon();
+            while( aux2 != null){
+                if(aux2.getSibling() == null){
+                    aux2.setSibling(origen);
+                    break;
+                }
+            }
+        }
     }
 
     // check position method
