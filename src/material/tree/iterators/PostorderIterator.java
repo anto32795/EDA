@@ -2,7 +2,10 @@ package material.tree.iterators;
 
 import material.Position;
 import material.tree.Tree;
+import material.tree.narytree.LinkedTree;
 
+
+import java.util.ArrayDeque;
 import java.util.Iterator;
 import java.util.function.Predicate;
 
@@ -14,14 +17,19 @@ import java.util.function.Predicate;
  */
 public class PostorderIterator<E> implements Iterator<Position<E>> {
 
-    //TODO: Implementar (alumnos)
+    private ArrayDeque<Position<E>> nodeStack;
+    private Tree<E> tree;
 
     public PostorderIterator(Tree<E> tree) {
-        throw new RuntimeException("Not yet implemented");
+        nodeStack = new ArrayDeque<>();
+        nodeStack.push(tree.root());
+        this.tree = tree;
     }
 
     public PostorderIterator(Tree<E> tree, Position<E> start) {
-        throw new RuntimeException("Not yet implemented");
+        nodeStack = new ArrayDeque<>();
+        nodeStack.push(start);
+        this.tree = tree;
     }
 
     public PostorderIterator(Tree<E> tree, Position<E> start, Predicate<Position<E>> predicate) {
@@ -31,16 +39,22 @@ public class PostorderIterator<E> implements Iterator<Position<E>> {
 
     @Override
     public boolean hasNext() {
-        throw new RuntimeException("Not yet implemented");
+        return !nodeStack.isEmpty();
     }
 
     @Override
     public Position<E> next() {
-        throw new RuntimeException("Not yet implemented");
+
+        for (Position<E> node : tree.children(nodeStack.peek())) {
+            nodeStack.push(node);
+        }
+        Position<E> aux = nodeStack.pop();
+        return aux;
     }
 
     @Override
     public void remove(){
-        throw new RuntimeException("Not yet implemented");
+        throw new RuntimeException("Remove is not supported");
     }
+
 }
