@@ -50,6 +50,11 @@ public class ArrayBinaryTree<E> implements BinaryTree<E> {
         this.size = 0;
     }
 
+    public ArrayBinaryTree(ArrayList<BTNode<E>> bucket, int size) {
+        this.bucket = bucket;
+        this.size = size;
+    }
+
     public ArrayList<BTNode<E>> getBucket() {
         return bucket;
     }
@@ -102,33 +107,92 @@ public class ArrayBinaryTree<E> implements BinaryTree<E> {
         return rtn;
     }
 
+    /**
+     * Los nodo par son hijo izq
+     * */
     @Override
     public Position<E> sibling(Position<E> p) throws RuntimeException {
-        return null;
+        BTNode<E> node = checkPosition(p);
+        int pos_node = node.getPos();
+        int pos_sibling, pos_parent = pos_node/2;
+
+        if(pos_node%2==0){
+            pos_sibling = pos_node +1;
+        }
+        else{
+           pos_sibling = pos_node - 1;
+        }
+        Position<E> rtn = this.bucket.get(pos_sibling);
+        if(rtn == null) throw new RuntimeException("Node has no sibling");
+        return rtn;
     }
 
     @Override
     public Position<E> insertLeft(Position<E> p, E e) throws RuntimeException {
-        return null;
+        BTNode<E> parent = checkPosition(p);
+        int pos_parent = parent.getPos();
+        if(this.bucket.get(pos_parent*2) != null){
+            throw new RuntimeException("Node already has a left child");
+        }
+        BTNode<E> new_node = new BTNode<>(e, pos_parent*2, this);
+        this.bucket.add(pos_parent*2, new_node);
+        this.size++;
+        return new_node;
     }
 
     @Override
     public Position<E> insertRight(Position<E> p, E e) throws RuntimeException {
-        return null;
+        BTNode<E> parent = checkPosition(p);
+        int pos_parent = parent.getPos();
+        if(this.bucket.get(pos_parent*2+1) != null){
+            throw new RuntimeException("Node already has a left child");
+        }
+        BTNode<E> new_node = new BTNode<>(e, pos_parent*2+1, this);
+        this.bucket.add(pos_parent*2+1, new_node);
+        this.size++;
+        return new_node;
     }
 
     @Override
     public E remove(Position<E> p) throws RuntimeException {
+        BTNode<E> node = checkPosition(p);
+        int pos_node = node.getPos();
+        if(hasLeft(p) && hasRight(p)) throw new RuntimeException("Node has two children");
+        else if(isLeaf(p)){
+            this.bucket.add(pos_node, null);
+            this.size--;
+        }
+        else{
+            return null;
+        }
+        // TODO: REO
         return null;
     }
 
     @Override
     public void swap(Position<E> p1, Position<E> p2) {
-
+        return;
     }
 
     @Override
     public BinaryTree<E> subTree(Position<E> v) {
+        ArrayBinaryTree<BTNode<E>> new_tree;
+        BTNode<E> newRoot = checkPosition(v);
+        int pos = newRoot.getPos();
+        ArrayList<BTNode<E>> newBucket = new ArrayList<>();
+        BTNode<E> aux = newRoot;
+        int rel_pos = 1;
+        /*
+        while(aux != null){
+            try{
+                newBucket.add(rel_pos, aux);
+                rel_pos*=2;
+                if(hasLeft(aux)){
+                    newBucket.add(rel_pos, )
+                }
+            }
+        }*/
+        //Iterator<BTNode<E>> it = iterator(v);
         return null;
     }
 
