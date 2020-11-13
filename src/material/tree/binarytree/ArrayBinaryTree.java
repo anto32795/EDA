@@ -237,11 +237,44 @@ public class ArrayBinaryTree<E> implements BinaryTree<E> {
         this.size+=tree.size();
     }
 
-    //private List<BTNode<E>> getTreeNewOrderedNodes()
-
     @Override
     public void attachRight(Position<E> p, BinaryTree<E> tree) throws RuntimeException {
+        BTNode<E> parent_node = checkPosition(p);
+        if(! (tree instanceof ArrayBinaryTree)){
+            throw new RuntimeException("Tree is not a ArrayBinaryTree");
+        }
+        else if(hasLeft(p)){
+            throw new RuntimeException("Tree has already a Left Child");
+        }
+        else if(tree.isEmpty())
+            throw new RuntimeException("Tree is empty. Nothing to attach");
+        // Check if p is already in tree to attach
+        Position<E> new_tree_root = tree.root(), aux_parent, aux_left, aux_right;
+        Iterator<Position<E>> it = iterator();
+        while(it.hasNext()){
+            if(it.next() == new_tree_root)
+                throw new RuntimeException("Tree to attach is already in original tree");
+        }
 
+        // Changing all node positions relative to original
+        it = tree.iterator();
+        BTNode<E> raiz = ((BTNode<E>) it.next());
+        raiz.setPos(((BTNode<E>) p).getPos()*2 +1);
+        while(it.hasNext()){
+            aux_parent = it.next();
+            int aux_pos = ((BTNode<E>)aux_parent).getPos();
+            aux_right = tree.right(aux_parent);
+            aux_left = tree.left(aux_parent);
+
+            if(aux_left != null)((BTNode<E>)aux_left).setPos(aux_pos*2);
+            if(aux_right != null)((BTNode<E>)aux_right).setPos(aux_pos*2 +1);
+        }
+
+        for(BTNode<E> child: ((ArrayBinaryTree<E>) tree).bucket){
+            this.bucket.add(child.getPos(), child);
+        }
+
+        this.size+=tree.size();
     }
 
     @Override
@@ -280,27 +313,40 @@ public class ArrayBinaryTree<E> implements BinaryTree<E> {
 
     @Override
     public Iterable<? extends Position<E>> children(Position<E> v) {
-        return null;
+        List<Position<E>> rtn = new ArrayList<>(2);
+        BTNode<E> parent = checkPosition(v);
+        int pos_padre = parent.getPos();
+        rtn.add(0, this.left(v));
+        rtn.add(1, this.right(v));
+        return rtn;
     }
 
     @Override
     public boolean isInternal(Position<E> v) {
-        return false;
+        return !isLeaf(v);
     }
 
     @Override
     public boolean isLeaf(Position<E> v) throws RuntimeException {
-        return false;
+        BTNode<E> node = checkPosition(v);
+        if(left(v) != null || right(v) != null)
+            return false;
+        return true;
     }
 
     @Override
     public boolean isRoot(Position<E> v) {
-        return false;
+        BTNode<E> node = checkPosition(v);
+        return node.getPos() == 1;
     }
 
     @Override
     public Position<E> addRoot(E e) throws RuntimeException {
-        return null;
+        if(bucket.get(0) != null)
+            throw new RuntimeException("Tree has already root");
+        BTNode<E> root = new BTNode<>(e, 1, this);
+        bucket.add(1, root);
+        this.size++;
     }
 
     @Override
