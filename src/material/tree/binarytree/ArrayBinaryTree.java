@@ -5,6 +5,7 @@ import material.tree.narytree.LCRSTree;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class ArrayBinaryTree<E> implements BinaryTree<E> {
     private class BTNode<E> implements Position<E>{
@@ -198,8 +199,45 @@ public class ArrayBinaryTree<E> implements BinaryTree<E> {
 
     @Override
     public void attachLeft(Position<E> p, BinaryTree<E> tree) throws RuntimeException {
+        BTNode<E> parent_node = checkPosition(p);
+        if(! (tree instanceof ArrayBinaryTree)){
+            throw new RuntimeException("Tree is not a ArrayBinaryTree");
+        }
+        else if(hasLeft(p)){
+            throw new RuntimeException("Tree has already a Left Child");
+        }
+        else if(tree.isEmpty())
+            throw new RuntimeException("Tree is empty. Nothing to attach");
+        // Check if p is already in tree to attach
+        Position<E> new_tree_root = tree.root(), aux_parent, aux_left, aux_right;
+        Iterator<Position<E>> it = iterator();
+        while(it.hasNext()){
+            if(it.next() == new_tree_root)
+                throw new RuntimeException("Tree to attach is already in original tree");
+        }
 
+        // Changing all node positions relative to original
+        it = tree.iterator();
+        BTNode<E> raiz = ((BTNode<E>) it.next());
+        raiz.setPos(((BTNode<E>) p).getPos()*2);
+        while(it.hasNext()){
+            aux_parent = it.next();
+            int aux_pos = ((BTNode<E>)aux_parent).getPos();
+            aux_right = tree.right(aux_parent);
+            aux_left = tree.left(aux_parent);
+
+            if(aux_left != null)((BTNode<E>)aux_left).setPos(aux_pos*2);
+            if(aux_right != null)((BTNode<E>)aux_right).setPos(aux_pos*2 +1);
+        }
+
+        for(BTNode<E> child: ((ArrayBinaryTree<E>) tree).bucket){
+            this.bucket.add(child.getPos(), child);
+        }
+
+        this.size+=tree.size();
     }
+
+    //private List<BTNode<E>> getTreeNewOrderedNodes()
 
     @Override
     public void attachRight(Position<E> p, BinaryTree<E> tree) throws RuntimeException {
@@ -208,27 +246,36 @@ public class ArrayBinaryTree<E> implements BinaryTree<E> {
 
     @Override
     public boolean isComplete() {
-        return false;
+        Iterator<Position<E>> it = this.iterator();
+        Position<E> node;
+        while(it.hasNext()){
+            node = it.next();
+            if ( ( hasLeft(node) && !hasRight(node) ) || !hasLeft(node) && hasRight(node) ){
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
     public int size() {
-        return 0;
+        return this.size;
     }
 
     @Override
     public boolean isEmpty() {
-        return false;
+        return this.size==0;
     }
 
     @Override
     public Position<E> root() throws RuntimeException {
-        return null;
+        return this.bucket.get(1);
     }
 
     @Override
     public Position<E> parent(Position<E> v) throws RuntimeException {
-        return null;
+        BTNode<E> node = checkPosition(v);
+        return this.bucket.get(node.getPos()/2);
     }
 
     @Override
