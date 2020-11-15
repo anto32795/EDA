@@ -3,6 +3,7 @@ package material.tree.binarytree;
 import material.Position;
 import material.tree.iterators.InorderBinaryTreeIterator;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -458,6 +459,42 @@ public class LinkedBinaryTree<E> implements BinaryTree<E> {
             throw new RuntimeException("The position is invalid");
         }
         return (BTNode<E>) p;
+    }
+
+    public int BTDiameter(Position<E> leaf1, Position<E> leaf2){
+        if(!isLeaf(leaf1) || !isLeaf(leaf2)){
+            return -1;
+        }
+        ArrayList<Position<E>> parents1 = new ArrayList<>(), parents2 = new ArrayList<>();
+        Position<E> aux;
+        BTNode<E> aux_node;
+        int d1 = 0, d2 = 0;
+        boolean finish = false;
+
+        aux_node = (BTNode<E>) leaf1;
+        while(aux_node != null){
+            parents1.add(aux_node.getParent());
+            aux_node = aux_node.getParent();
+        }
+
+        aux_node = (BTNode<E>) leaf2;
+        while(aux_node != null){
+            parents2.add(aux_node.getParent());
+            aux_node = aux_node.getParent();
+        }
+
+        for(d1=0; d1<parents1.size(); d1++){
+            for(d2=0; d2< parents2.size(); d2++){
+                if(parents1.get(d1) == parents2.get(d2)){
+                    finish=true;
+                    break;
+                }
+            }
+            if(finish) break;
+        }
+        d1+=2;
+        d2+=2;
+        return d1+d2-1;
     }
 
 }
