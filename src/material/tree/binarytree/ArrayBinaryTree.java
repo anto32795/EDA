@@ -347,6 +347,7 @@ public class ArrayBinaryTree<E> implements BinaryTree<E> {
         BTNode<E> root = new BTNode<>(e, 1, this);
         bucket.add(1, root);
         this.size++;
+        return root;
     }
 
     @Override
