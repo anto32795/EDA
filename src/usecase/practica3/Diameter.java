@@ -15,15 +15,29 @@ public class Diameter {
 		int d1,d2;
 
 		aux = v1;
-		while(aux != null) {
+		/*while(aux != null) {
 			a1.add(aux);
 			aux = tree.parent(aux);
+		}*/
+		try{
+			while(true){
+				a1.add(aux);
+				aux = tree.parent(aux);
+			}
+		}catch(RuntimeException e){
 		}
 
 		aux = v2;
-		while(aux != null) {
+		/*while(aux != null) {
 			a2.add(aux);
 			aux = tree.parent(aux);
+		}*/
+		try{
+			while(true){
+				a2.add(aux);
+				aux = tree.parent(aux);
+			}
+		}catch(RuntimeException e){
 		}
 
 		for (d1=0; d1 < a1.size(); d1++){
