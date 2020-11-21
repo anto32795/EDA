@@ -2,7 +2,9 @@ package material.tree.binarytree;
 
 import material.Position;
 import material.tree.binarytree.BinaryTree;
+import material.tree.iterators.BFSIterator;
 
+import java.util.ArrayDeque;
 import java.util.Iterator;
 
 public class BinaryTreeUtils<E> {
@@ -18,24 +20,38 @@ public class BinaryTreeUtils<E> {
 	  * become right children and vice versa
 	 *
 	 * 	*/
-	/*
+
 	public BinaryTree<E> mirror() {
 		BinaryTree<E> reverse_tree = new LinkedBinaryTree<>();
-		reverse_tree.addRoot(this.tree.root().getElement());
+		Position<E> root = this.tree.root();
+		//reverse_tree.addRoot(root.getElement());
+		ArrayDeque<Position<E>> queue_nodes = new ArrayDeque<>(), queue_parents = new ArrayDeque<>();
+		BFSIterator<E> it = new BFSIterator<>(this.tree);
+		Position<E> aux, izq, der;
 
+		// parents queue
+		while(it.hasNext()){
+			queue_parents.add(it.next());
+		}
 
+		// nodes queue
+		queue_nodes = queue_parents.clone();
+
+		//reverse_tree.addRoot.getElement());
+		aux = queue_parents.remove();
+		queue_nodes.remove();
+		while(!queue_parents.isEmpty()){
+			izq = queue_nodes.remove();
+			der = queue_nodes.remove();
+
+			reverse_tree.insertLeft(aux, der.getElement()); // sea null o no
+			reverse_tree.insertRight(aux, izq.getElement());
+
+			aux = queue_parents.remove();
+		}
+		return reverse_tree;
 	}
 
-	private Position<E> node_mirror(Position<E> node){
-		if (node == null)
-			return node;
-		Position<E> left = node_mirror(this.tree.left(node));
-		Position<E> right = node_mirror(this.tree.right(node));
-
-		this.tree.left(node) = right;
-
-
-	}*/
 	/** 
 	  * Determines whether the element e is the tree or not
 	 *
