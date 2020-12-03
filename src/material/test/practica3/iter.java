@@ -1,21 +1,13 @@
-package material.test.practica2;
+package material.test.practica3;
+
 import material.Position;
-import material.tree.iterators.BFSIterator;
 import material.tree.narytree.LinkedTree;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import usecase.practica2.GameOfThrones;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.ArrayDeque;
 
-public class MoveSubTreeTest {
-    private LinkedTree<String> tree;
-    private Position<String> ori, dest;
-
-    @BeforeEach
-    void setUp() {
-        tree = new LinkedTree<>();
-        String li2 = "A C D B E F G H I J K L M N";
+public class iter {
+    public static void main(String[] args) {
+        LinkedTree<String> tree = new LinkedTree<>();
         String li = "A B C D E F G H I J K L M N";
         String[] letras = li.split(" ");
         Position<String> raiz = tree.addRoot(letras[0]);
@@ -39,23 +31,21 @@ public class MoveSubTreeTest {
 
         Position<String> n = tree.add(letras[13], k);
 
-        ori = b;
-        dest = n;
+        traversalPreorder(tree);
+
+
     }
 
-
-    @Test
-    void testMoveSubtree() {
-        String expected = "ACDGHIJKLMNBEF";
-        tree.moveSubtree(ori, dest);
-        String output = "";
-        BFSIterator<String> it = new BFSIterator<>(tree, tree.root());
-        while(it.hasNext()){
-            String n = it.next().getElement();
-            output+=n;
+    public static void traversalPreorder(LinkedTree<String> t) {
+        ArrayDeque<Position<String>> stack = new ArrayDeque<>();
+        Position<String> node;
+        stack.push(t.root());
+        while(!stack.isEmpty()){
+            node = stack.pop();
+            System.out.println(node.getElement());
+            for(Position<String> child: t.children(node)){
+                stack.push(child);
+            }
         }
-
-        assertEquals(expected, output);
     }
-
 }
