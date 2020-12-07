@@ -55,20 +55,39 @@ public class HashTableMapSC<K, V> implements Map<K, V> {
     }
 
     private class HashTableMapIterator<T, U> implements Iterator<Entry<T, U>> {
+// TODO: THIS
+        private List<HashEntry<T, U>> [] bucket;
+        private int pos_bucket;
+        private int pos_list;
 
         public HashTableMapIterator(List<HashEntry<T, U>>[] map, int numElems) {
-            throw new RuntimeException("Not yet implemented");
+            this.bucket = map;
+            this.pos_list = 0;
+            if (numElems == 0) {
+                this.pos_bucket = bucket.length;
+            } else {
+                this.pos_bucket = 0;
+                goToNextBucket(0);
+            }
         }
 
 
         @Override
         public boolean hasNext() {
-            throw new RuntimeException("Not yet implemented");
+            return (this.pos_bucket < this.bucket.length);
         }
 
         @Override
         public Entry<T, U> next() {
-            throw new RuntimeException("Not yet implemented");
+            if (hasNext()) {
+                int currentPos = this.pos_bucket;
+                goToNextBucket(this.pos_bucket + 1);
+                List<HashEntry<T,U>> entry_list = this.bucket[currentPos];
+                //return this.bucket[currentPos];
+            } else {
+                throw new IllegalStateException("The map has not more elements");
+            }
+            return null;
         }
 
         @Override
