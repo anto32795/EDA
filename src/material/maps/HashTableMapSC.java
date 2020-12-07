@@ -1,9 +1,6 @@
 package material.maps;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Separate chaining table implementation of hash tables. Note that all
@@ -20,27 +17,32 @@ public class HashTableMapSC<K, V> implements Map<K, V> {
         protected U value;
 
         public HashEntry(T k, U v) {
-            throw new RuntimeException("Not yet implemented");
+            key = k;
+            value = v;
         }
 
         @Override
         public U getValue() {
-            throw new RuntimeException("Not yet implemented");
+            return value;
         }
 
         @Override
         public T getKey() {
-            throw new RuntimeException("Not yet implemented");
+            return key;
         }
 
         public U setValue(U val) {
-            throw new RuntimeException("Not yet implemented");
+            U old = this.value;
+            this.value = val;
+            return old;
         }
 
         @Override
         public boolean equals(Object o) {
-
-            throw new RuntimeException("Not yet implemented");
+            if(o == null) return false;
+            else if(o == this) return true;
+            HashEntry<T,U> aux = (HashEntry<T, U>) o;
+            return (aux.key.equals(this.key) && aux.value.equals(this.value));
         }
 
         /**
@@ -136,12 +138,17 @@ public class HashTableMapSC<K, V> implements Map<K, V> {
     /**
      * The array of Lists.
      */
+    private LinkedList<HashEntry<K,V>>[] bucket;
+    private int capacity, prime, n;
 
     /**
      * Creates a hash table with prime factor 109345121 and capacity 1000.
      */
     public HashTableMapSC() {
-        throw new RuntimeException("Not yet implemented");
+        this.capacity = 1000;
+        this.prime = 109345121;
+        this.bucket = new LinkedList[capacity];
+        this.n = 0;
     }
 
     /**
@@ -150,7 +157,10 @@ public class HashTableMapSC<K, V> implements Map<K, V> {
      * @param cap initial capacity
      */
     public HashTableMapSC(int cap) {
-        throw new RuntimeException("Not yet implemented");
+        this.capacity = cap;
+        this.prime = 109345121;
+        this.bucket = new LinkedList[capacity];
+        this.n = 0;
     }
 
     /**
@@ -160,7 +170,10 @@ public class HashTableMapSC<K, V> implements Map<K, V> {
      * @param cap initial capacity
      */
     public HashTableMapSC(int p, int cap) {
-        throw new RuntimeException("Not yet implemented");
+        this.capacity = cap;
+        this.prime = p;
+        this.bucket = new LinkedList[capacity];
+        this.n = 0;
     }
 
     /**
@@ -170,33 +183,90 @@ public class HashTableMapSC<K, V> implements Map<K, V> {
      * @return the hash value
      */
     protected int hashValue(K key) {
-        throw new RuntimeException("Not yet implemented");
+        Random rand = new Random();
+        int a = rand.nextInt() % this.prime;
+        int b = rand.nextInt() % this.prime;
+        return ((key.hashCode() * a + b) % this.prime ) % this.capacity;
     }
 
 
     @Override
     public int size() {
-        throw new RuntimeException("Not yet implemented");
+        return this.capacity;
     }
 
     @Override
     public boolean isEmpty() {
-        throw new RuntimeException("Not yet implemented");
+        return this.n == 0;
     }
 
     @Override
     public V get(K key) {
-        throw new RuntimeException("Not yet implemented");
+        checkKey(key);
+        LinkedList<HashEntry<K,V>> entry_list = this.bucket[hashValue(key)];
+        if(entry_list == null){
+            return null;
+        }
+        else if(entry_list.size() == 1){
+            return entry_list.getFirst().value;
+        }
+        else {
+            for(HashEntry<K,V> entry: entry_list){
+                if(entry.key.equals(key)){
+                    return entry.value;
+                }
+            }
+        }
+        return null;
     }
 
     @Override
     public V put(K key, V value) {
-        throw new RuntimeException("Not yet implemented");
+        checkKey(key);
+        HashEntry<K,V> newEntry = new HashEntry<>(key, value);
+        LinkedList<HashEntry<K,V>> entry_list = this.bucket[hashValue(key)];
+        if(entry_list == null){
+            entry_list = new LinkedList<>();
+        }
+        entry_list.add(newEntry);
+        if(entry_list.size() == 1){
+            return null; // no previous entry
+        }else{
+            return entry_list.getFirst().value;
+        }
+
     }
 
     @Override
     public V remove(K key) {
-        throw new RuntimeException("Not yet implemented");
+        checkKey(key);
+        LinkedList<HashEntry<K,V>> entry_list = this.bucket[hashValue(key)];
+        HashEntry<K,V> found_entry = null;
+        if(entry_list == null)
+            return null;
+        else if(entry_list.size() == 1){
+            V toReturn = entry_list.getFirst().value;
+            entry_list.removeFirst();
+            this.n--;
+            return toReturn;
+        }
+        else {
+            for(HashEntry<K,V> entry: entry_list){
+                if(entry.key.equals(key)){
+                    found_entry = entry;
+                    break;
+                }
+            }
+            if(found_entry == null) {
+                return null;
+            }
+            else {
+                V toreturn = found_entry.getValue();
+                entry_list.remove(found_entry);
+                this.n--;
+                return toreturn;
+            }
+        }
     }
 
 
@@ -227,7 +297,7 @@ public class HashTableMapSC<K, V> implements Map<K, V> {
      * @param k Key
      */
     protected void checkKey(K k) {
-        throw new RuntimeException("Not yet implemented");
+        if(k == null) throw new RuntimeException("Invalid key: null");
     }
 
 
@@ -235,6 +305,17 @@ public class HashTableMapSC<K, V> implements Map<K, V> {
      * Increase/reduce the size of the hash table and rehashes all the entries.
      */
     protected void rehash(int newCap) {
-        throw new RuntimeException("Not yet implemented");
+        this.capacity = newCap;
+        LinkedList<HashEntry<K,V>>[] old_bucket = this.bucket;
+        this.bucket = new LinkedList[newCap];
+
+        for(LinkedList<HashEntry<K,V>> entry_list: old_bucket){
+            if(entry_list != null){
+                for(HashEntry<K,V> entry: entry_list){
+                    if(entry != null)
+                        this.put(entry.getKey(), entry.getValue());
+                }
+            }
+        }
     }
 }
