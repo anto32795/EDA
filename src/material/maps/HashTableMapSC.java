@@ -57,6 +57,7 @@ public class HashTableMapSC<K, V> implements Map<K, V> {
     private class HashTableMapIterator<T, U> implements Iterator<Entry<T, U>> {
 // TODO: THIS
         private List<HashEntry<T, U>> [] bucket;
+        private List<HashEntry<T,U>> list_entry;
         private int pos_bucket;
         private int pos_list;
 
@@ -65,8 +66,10 @@ public class HashTableMapSC<K, V> implements Map<K, V> {
             this.pos_list = 0;
             if (numElems == 0) {
                 this.pos_bucket = bucket.length;
+                this.list_entry = this.bucket[this.pos_bucket-1];
             } else {
                 this.pos_bucket = 0;
+                this.list_entry = this.bucket[this.pos_bucket-1];
                 goToNextBucket(0);
             }
         }
