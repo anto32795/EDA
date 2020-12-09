@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PearRegisterTest {
     private static PearRegister register;
@@ -14,7 +15,8 @@ class PearRegisterTest {
     @org.junit.jupiter.api.BeforeAll
     static void loadFile() {
         register = new PearRegister();
-        String path = "src/PearSalesFile.txt";
+        //String path = "src/PearSalesFile.txt";
+        String path = "PearSalesFile.txt";
         register.loadFile(path);
     }
 
@@ -26,7 +28,7 @@ class PearRegisterTest {
         List<PearStore> pearStoreList = new ArrayList<>();
         pearStoreList.add(pearStore);
         register.addProduct(producto, pearStoreList);
-        //assertTrue(register.productExists(producto));
+        assertTrue(register.productExists(producto));
     }
 
     @org.junit.jupiter.api.Test

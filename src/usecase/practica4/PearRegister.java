@@ -23,21 +23,22 @@ public class PearRegister {
             while(sc.hasNextLine()){
                 num_prods = sc.nextInt();
                 sc.nextLine();
-                System.out.println("num prods: "+num_prods);
+                //System.out.println("num prods: "+num_prods);
                 for(i=0; i<num_prods;i++){
                     prod = sc.nextLine().split(" ");
                     //System.out.println(sc.nextLine());
                     producto = new Product(prod[0], Integer.parseInt(prod[1]));
-                    System.out.println("Producto: "+producto);
+                    //System.out.println("Producto: "+producto);
                     lista_tiendas = new LinkedList<>();
                     for(j=0; j<Integer.parseInt(prod[2]); j++){
                         store = sc.nextLine().split(" ");
                         PearStore ps = new PearStore(store[0], Integer.parseInt(store[1]));
-                        System.out.println("Tienda: "+ps);
+                        //System.out.println("Tienda: "+ps);
                         ps.addPuntuationToProduct(Double.parseDouble(store[3]), producto);
                         ps.addSoldsToProduct(Integer.parseInt(store[2]), producto);
                         lista_tiendas.add(ps);
                     }
+                    //System.out.println("Lista tiendas: "+lista_tiendas);
                     storesWithProduct.put(producto, lista_tiendas);
                 }
             }
@@ -48,9 +49,21 @@ public class PearRegister {
 
     public void addProduct(Product producto, Iterable<PearStore> stores){
         List<PearStore> tiendas = this.storesWithProduct.get(producto);
-        if(tiendas == null) tiendas = new LinkedList<>();
+        /*if(tiendas == null) tiendas = new LinkedList<>();
         for(PearStore s: stores){
             tiendas.add(s);
+        }*/
+        if(tiendas == null){
+            tiendas = new LinkedList<>();
+            for(PearStore s: stores){
+                tiendas.add(s);
+            }
+            storesWithProduct.put(producto, tiendas);
+        }
+        else{
+            for(PearStore s: stores){
+                tiendas.add(s);
+            }
         }
     }
 
@@ -94,7 +107,8 @@ public class PearRegister {
 
     public boolean productExists(Product product){
         List<PearStore> stores = storesWithProduct.get(product);
-        if(stores == null || stores.isEmpty()) return false;
+        if(stores == null) return false;
+        else if(stores.isEmpty()) return false;
         else return true;
     }
 }

@@ -35,11 +35,11 @@ public class PearStore {
 
     public void addSoldsToProduct(int solds, Product product){
         //Integer val = unitsSoldByProduct.get(product)+solds;
-        unitsSoldByProduct.replace(product, solds);
+        unitsSoldByProduct.put(product, solds);
     }
 
     public void addPuntuationToProduct(double puntuation, Product product){
-        puntuationByProduct.replace(product, puntuation);
+        puntuationByProduct.put(product, puntuation);
     }
 
     public double getPuntuationByProduct(Product p){
@@ -55,7 +55,8 @@ public class PearStore {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PearStore pearStore = (PearStore) o;
-        return Objects.equals(store_name, pearStore.store_name) && Objects.equals(store_id, pearStore.store_id) && Objects.equals(unitsSoldByProduct, pearStore.unitsSoldByProduct) && Objects.equals(puntuationByProduct, pearStore.puntuationByProduct);
+        //return Objects.equals(store_name, pearStore.store_name) && Objects.equals(store_id, pearStore.store_id) && Objects.equals(unitsSoldByProduct, pearStore.unitsSoldByProduct) && Objects.equals(puntuationByProduct, pearStore.puntuationByProduct);
+        return this.store_id.equals(pearStore.store_id) && this.store_name.equals(pearStore.store_name);
     }
 
     @Override
