@@ -57,40 +57,29 @@ public class HashTableMapSC<K, V> implements Map<K, V> {
     private class HashTableMapIterator<T, U> implements Iterator<Entry<T, U>> {
 // TODO: THIS
         private List<HashEntry<T, U>> [] bucket;
-        private List<HashEntry<T,U>> list_entry;
         private int pos_bucket;
         private int pos_list;
 
         public HashTableMapIterator(List<HashEntry<T, U>>[] map, int numElems) {
-            this.bucket = map;
-            this.pos_list = 0;
-            if (numElems == 0) {
-                this.pos_bucket = bucket.length;
-                this.list_entry = this.bucket[this.pos_bucket-1];
-            } else {
-                this.pos_bucket = 0;
-                this.list_entry = this.bucket[this.pos_bucket-1];
-                goToNextBucket(0);
-            }
+            bucket = map;
+            pos_bucket = numElems;
+            pos_list = 0;
         }
 
 
         @Override
         public boolean hasNext() {
-            return (this.pos_bucket < this.bucket.length);
+            return ((this.pos_bucket < this.bucket.length) || (pos_list < bucket[pos_bucket].size()));
         }
 
         @Override
         public Entry<T, U> next() {
             if (hasNext()) {
-                int currentPos = this.pos_bucket;
-                goToNextBucket(this.pos_bucket + 1);
-                List<HashEntry<T,U>> entry_list = this.bucket[currentPos];
-                //return this.bucket[currentPos];
+                goToNextBucket(pos_bucket);
+                return this.bucket[pos_bucket].get(pos_list);
             } else {
                 throw new IllegalStateException("The map has not more elements");
             }
-            return null;
         }
 
         @Override
@@ -104,8 +93,15 @@ public class HashTableMapSC<K, V> implements Map<K, V> {
          * Returns the index of the next position starting starting from a given index.
          * (if the parameter is already a valid position then does nothing)
          */
-        private int goToNextBucket(int i) {
-            throw new RuntimeException("Not yet implemented");
+        private void goToNextBucket(int i) {
+            if(bucket[pos_bucket].get(pos_list+1) != null)
+                pos_list++;
+            else {
+                pos_list = 0;
+                while(pos_bucket < bucket.length && (bucket[pos_bucket] == null || bucket[pos_bucket].isEmpty())){
+                    pos_bucket++;
+                }
+            }
         }
     }
 
