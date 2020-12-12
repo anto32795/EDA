@@ -240,6 +240,8 @@ public class HashTableMapSC<K, V> implements Map<K, V> {
 
     @Override
     public V put(K key, V value) {
+        if(n / capacity >= 0.75)
+            rehash(this.capacity*2);
         checkKey(key);
         HashEntry<K,V> newEntry = new HashEntry<>(key, value);
         LinkedList<HashEntry<K,V>> entry_list = this.bucket[hashValue(key)];
