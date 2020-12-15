@@ -158,6 +158,8 @@ public class HashTableMapSC<K, V> implements Map<K, V> {
      */
     private LinkedList<HashEntry<K,V>>[] bucket;
     private int capacity, prime, n;
+    private int a,b; //random numbers
+    private Random rand;
 
     /**
      * Creates a hash table with prime factor 109345121 and capacity 1000.
@@ -166,7 +168,14 @@ public class HashTableMapSC<K, V> implements Map<K, V> {
         this.capacity = 1000;
         this.prime = 109345121;
         this.bucket = new LinkedList[capacity];
+        for(int i=0 ; i<capacity; i++){
+            bucket[i] = new LinkedList<>();
+        }
         this.n = 0;
+        rand = new Random();
+        a = Math.abs(rand.nextInt()) % this.prime;
+        b = Math.abs(rand.nextInt()) % this.prime;
+
     }
 
     /**
@@ -178,7 +187,13 @@ public class HashTableMapSC<K, V> implements Map<K, V> {
         this.capacity = cap;
         this.prime = 109345121;
         this.bucket = new LinkedList[capacity];
+        for(int i=0 ; i<capacity; i++){
+            bucket[i] = new LinkedList<>();
+        }
         this.n = 0;
+        rand = new Random();
+        a = Math.abs(rand.nextInt()) % this.prime;
+        b = Math.abs(rand.nextInt()) % this.prime;
     }
 
     /**
@@ -191,7 +206,13 @@ public class HashTableMapSC<K, V> implements Map<K, V> {
         this.capacity = cap;
         this.prime = p;
         this.bucket = new LinkedList[capacity];
+        for(int i=0 ; i<capacity; i++){
+            bucket[i] = new LinkedList<>();
+        }
         this.n = 0;
+        rand = new Random();
+        a = Math.abs(rand.nextInt()) % this.prime;
+        b = Math.abs(rand.nextInt()) % this.prime;
     }
 
     /**
@@ -200,17 +221,12 @@ public class HashTableMapSC<K, V> implements Map<K, V> {
      * @param key Key
      * @return the hash value
      */
-    protected int hashValue(K key) {
-        Random rand = new Random();
-        int a = rand.nextInt() % this.prime;
-        int b = rand.nextInt() % this.prime;
-        return ((key.hashCode() * a + b) % this.prime ) % this.capacity;
-    }
+    protected int hashValue(K key) { return ((key.hashCode() * a + b) % this.prime ) % this.capacity; }
 
 
     @Override
     public int size() {
-        return this.capacity;
+        return this.n;
     }
 
     @Override
@@ -219,75 +235,128 @@ public class HashTableMapSC<K, V> implements Map<K, V> {
     }
 
     @Override
-    public V get(K key) {
+    public V get(K key){
         checkKey(key);
-        LinkedList<HashEntry<K,V>> entry_list = this.bucket[hashValue(key)];
-        if(entry_list == null){
-            return null;
-        }
-        else if(entry_list.size() == 1){
-            return entry_list.getFirst().value;
-        }
-        else {
-            for(HashEntry<K,V> entry: entry_list){
-                if(entry.key.equals(key)){
-                    return entry.value;
-                }
+        int pos_bucket = this.hashValue(key);
+        List<HashEntry<K,V>> lista_pos = this.bucket[pos_bucket];
+        if(lista_pos == null || lista_pos.isEmpty())
+            throw new RuntimeException("There is no value for that key.");
+        for(HashEntry<K,V> entry: lista_pos){
+            if(entry.key.equals(key)){
+                return entry.value;
             }
+        }
+        throw new RuntimeException("There is no value for that key.");
+    }
+//    @Override
+//    public V get(K key) {
+//        checkKey(key);
+//        LinkedList<HashEntry<K,V>> entry_list = this.bucket[hashValue(key)];
+//        if(entry_list == null){
+//            return null;
+//        }
+//        else if(entry_list.size() == 1){
+//            return entry_list.getFirst().value;
+//        }
+//        else {
+//            for(HashEntry<K,V> entry: entry_list){
+//                if(entry.key.equals(key)){
+//                    return entry.value;
+//                }
+//            }
+//        }
+//        return null;
+//    }
+
+    @Override
+    public V put(K key, V value){
+        if(n / capacity >= 0.75)
+            rehash(this.capacity*2);
+
+        checkKey(key);
+        HashEntry<K,V> newEntry = new HashEntry<>(key, value);
+        LinkedList<HashEntry<K,V>> entry_list = this.bucket[this.hashValue(key)];
+        entry_list.add(newEntry);
+        this.n++;
+        return null;
+    }
+//
+//    @Override
+//    public V put(K key, V value) {
+//        if(n / capacity >= 0.75)
+//            rehash(this.capacity*2);
+//        checkKey(key);
+//        HashEntry<K,V> newEntry = new HashEntry<>(key, value);
+//        LinkedList<HashEntry<K,V>> entry_list = this.bucket[this.hashValue(key)];
+//        System.out.println("Insertando par ["+key.toString()+", "+value.toString()+"] en pos: "+this.hashValue(key));
+//        if(entry_list == null){
+//            entry_list = new LinkedList<>();
+//        }
+//        entry_list.add(newEntry);
+//        this.n++;
+//        if(entry_list.size() == 1){
+//            return null; // no previous entry
+//        }else{
+//            return entry_list.getFirst().value;
+//        }
+//
+//    }
+    @Override
+    public V remove(K key){
+        checkKey(key);
+        List<HashEntry<K,V>> entry_list = this.bucket[this.hashValue(key)];
+        HashEntry<K,V> refToDelete = null;
+        if(entry_list.isEmpty())
+            throw new RuntimeException("No entry to remove with key: "+key.toString());
+        for(HashEntry<K,V> entry: entry_list){
+            if(entry.key.equals(key)){
+                refToDelete = entry;
+                break;
+            }
+        }
+        if(refToDelete == null){
+            throw new RuntimeException("No entry to remove with key: "+key.toString());
+        }
+        else{
+            entry_list.remove(refToDelete);
+            this.n--;
         }
         return null;
     }
 
-    @Override
-    public V put(K key, V value) {
-        if(n / capacity >= 0.75)
-            rehash(this.capacity*2);
-        checkKey(key);
-        HashEntry<K,V> newEntry = new HashEntry<>(key, value);
-        LinkedList<HashEntry<K,V>> entry_list = this.bucket[hashValue(key)];
-        if(entry_list == null){
-            entry_list = new LinkedList<>();
-        }
-        entry_list.add(newEntry);
-        if(entry_list.size() == 1){
-            return null; // no previous entry
-        }else{
-            return entry_list.getFirst().value;
-        }
-
-    }
-
-    @Override
-    public V remove(K key) {
-        checkKey(key);
-        LinkedList<HashEntry<K,V>> entry_list = this.bucket[hashValue(key)];
-        HashEntry<K,V> found_entry = null;
-        if(entry_list == null)
-            return null;
-        else if(entry_list.size() == 1){
-            V toReturn = entry_list.getFirst().value;
-            entry_list.removeFirst();
-            this.n--;
-            return toReturn;
-        }
-        else {
-            for(HashEntry<K,V> entry: entry_list){
-                if(entry.key.equals(key)){
-                    found_entry = entry;
-                    break;
-                }
-            }
-            if(found_entry == null) {
-                return null;
-            }
-            else {
-                V toreturn = found_entry.getValue();
-                entry_list.remove(found_entry);
-                this.n--;
-                return toreturn;
-            }
-        }
-    }
+//
+//    @Override
+//    public V remove(K key) {
+//        checkKey(key);
+//        System.out.println("Borrando key ["+key.toString()+"] en pos: "+this.hashValue(key));
+//        LinkedList<HashEntry<K,V>> entry_list = this.bucket[this.hashValue(key)];
+//        HashEntry<K,V> found_entry = null;
+//        if(entry_list == null)
+//            return null;
+//        else if(entry_list.size() == 1){
+//            V toReturn = entry_list.getFirst().value;
+//            entry_list.removeFirst();
+//            this.n--;
+//            return toReturn;
+//        }
+//        else {
+//            for(HashEntry<K,V> entry: entry_list){
+//                if(entry.key.equals(key)){
+//                    found_entry = entry;
+//                    break;
+//                }
+//            }
+//            if(found_entry == null) {
+//                return null;
+//            }
+//            else {
+//                V toreturn = found_entry.getValue();
+//                entry_list.remove(found_entry);
+//                this.n--;
+//                return toreturn;
+//            }
+//        }
+//    }
 
 
     @Override
