@@ -262,7 +262,57 @@ public class LinkedTree<E> implements NAryTree<E> {
 
     // TODO: RUN TEST PARENT NOT UN LINKED?
     @Override
-    public void moveSubtree(Position<E> pOrig, Position<E> pDest) throws RuntimeException {
+    public void moveSubtree(Position<E> pOrig, Position<E> pDest) throws RuntimeException{
+        //pDest no puede estar en subArbol pOrgig
+        BFSIterator<E> it = new BFSIterator<>(this, pOrig);
+        Position<E> aux;
+        while(it.hasNext()){
+            aux = it.next();
+            if(aux == pDest){
+                throw new RuntimeException("Destination cannot be in subtree to move");
+            }
+        }
+        TreeNode<E> orig = checkPosition(pOrig), dest = checkPosition(pDest);
+
+        // add to destination children
+        dest.getChildren().add(orig);
+
+        // remove origin from his parent children list
+        orig.getParent().getChildren().remove(orig);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*public void moveSubtree(Position<E> pOrig, Position<E> pDest) throws RuntimeException {
         TreeNode<E> origen = checkPosition(pOrig);
         TreeNode<E> destino = checkPosition(pDest);
         BFSIterator<E> it = new BFSIterator<>(this, pOrig);
@@ -289,6 +339,6 @@ public class LinkedTree<E> implements NAryTree<E> {
         newList.add(origen);
         destino.setChildren(newList);
     }
-
+*/
 }
 

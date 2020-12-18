@@ -15,29 +15,42 @@ import java.util.function.Predicate;
  */
 public class PreorderIterator<E> implements Iterator<Position<E>> {
 
-    //TODO: Implementar (alumnos)
+    private ArrayDeque<Position<E>> nodeStack;
+    private Tree<E> tree;
+    Predicate<Position<E>> node_predicate;
 
     public PreorderIterator(Tree<E> tree) {
-        throw new RuntimeException("Not yet implemented");
+        this.tree = tree;
+        this.nodeStack = new ArrayDeque<>();
+        nodeStack.push(tree.root());
     }
 
     public PreorderIterator(Tree<E> tree, Position<E> start) {
-        throw new RuntimeException("Not yet implemented");
+        this.tree = tree;
+        this.nodeStack = new ArrayDeque<>();
+        nodeStack.push(start);
     }
 
     public PreorderIterator(Tree<E> tree, Position<E> start, Predicate<Position<E>> predicate) {
-        throw new RuntimeException("Not yet implemented");
+        this.tree = tree;
+        this.nodeStack = new ArrayDeque<>();
+        nodeStack.push(start);
+        this.node_predicate = predicate;
     }
 
 
     @Override
     public boolean hasNext() {
-        throw new RuntimeException("Not yet implemented");
+        return !this.nodeStack.isEmpty();
     }
 
     @Override
     public Position<E> next() {
-        throw new RuntimeException("Not yet implemented");
+        Position<E> aux = nodeStack.pop();
+        for (Position<E> node : tree.children(aux)) {
+            nodeStack.push(node);
+        }
+        return aux;
     }
 
     private void lookForward() {
